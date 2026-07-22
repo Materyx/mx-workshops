@@ -4,198 +4,144 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-FIGS_DIR = Path(__file__).resolve().parent.parent / 'Figs'
+from utils.load_ball_track import load_ball_track
+
+FIGS_DIR = Path(__file__).resolve().parent.parent / "Figs" / "ball_trajectory"
 FIGS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---------------------------------------
-# 1. Генерация синтетических данных
+# 1. Аналитическое решение
 # ---------------------------------------
-# Физические параметры
-g = 9.8        # ускорение свободного падения
-h0 = 1.0       # начальная высота
-v0 = 10.0      # начальная скорость
+g = 9.8  # Ускорение свободного падения, м/с^2
+y0 = 0.294  # Начальная высота, м
+v0 = 2.373  # Начальная скорость, м/с
 
-# Точное (аналитическое) решение h(t) = h0 + v0*t - 0.5*g*t^2
-def true_solution(t):
-    return h0 + v0*t - 0.5*g*(t**2)
+# Аналитическое решение для траектории мяча
+def analytical_solution(t):
+    t = np.asarray(t, dtype=np.float64)
+    return y0 + v0 * t - 0.5 * g * t**2
 
-# Генерируем набор моментов времени
-t_min, t_max = 0.0, 2.0
-N_data = 10
-t_data = np.linspace(t_min, t_max, N_data)
+# ---------------------------------------
+# 2. Зашумлённые данные
+# ---------------------------------------
+t, y = load_ball_track("Videos/Output/ball_throws/bad/track06.csv")
 
-# Генерируем синтетические "экспериментальные" высоты с шумом
-np.random.seed(42)
-noise_level = 0.7 # 70% шума
-h_data_exact = true_solution(t_data)
-h_data_noisy = h_data_exact + noise_level*np.random.randn(N_data)
-
-# Преобразуем в тензоры PyTorch
-t_data_tensor = torch.tensor(t_data, dtype=torch.float32).view(-1, 1)
-h_data_tensor = torch.tensor(h_data_noisy, dtype=torch.float32).view(-1, 1)
+t_data_tensor = torch.tensor(t, dtype=torch.float32).view(-1, 1)
+y_data_tensor = torch.tensor(y, dtype=torch.float32).view(-1, 1)
 
 # --------------------------------------------------------------
-# 2. Определяем небольшую полносвязную нейросеть для h(t)
+# 3. Определяем небольшую полносвязную нейросеть для h(t)
 # --------------------------------------------------------------
 class PINN(nn.Module):
-    def __init__(self, n_hidden=20): # n_hidden - количество нейронов в скрытом слое (по умолчанию 20)
+    def __init__(self, n_hidden=20): # n_hidden - количество скрытых нейронов
         super(PINN, self).__init__()
-        # Простой многослойный персептрон (MLP) с 2 скрытыми слоями
         self.net = nn.Sequential(
-            nn.Linear(1, n_hidden),
+            nn.Linear(1, n_hidden), # Первый слой: входной слой для времени t
             nn.Tanh(),
-            nn.Linear(n_hidden, n_hidden),
+            nn.Linear(n_hidden, n_hidden), # Второй слой: скрытый слой
             nn.Tanh(),
-            nn.Linear(n_hidden, 1)
+            nn.Linear(n_hidden, 1), # Третий слой: выходной слой для высоты h(t)
         )
 
     def forward(self, t):
-        """
-        Прямой проход: вход формы (batch_size, 1) -> выход формы (batch_size, 1)
-        """
         return self.net(t)
 
-# Создаём экземпляр модели
-model = PINN(n_hidden=20)
+model = PINN(n_hidden=20) # Создаем модель PINN с 20 скрытыми нейронами
 
-# -----------------------------------------------------
-# 3. Вспомогательная функция для автодифференцирования
-# -----------------------------------------------------
-def derivative(y, x):
-    """
-    Вычисляет dy/dx с помощью autograd в PyTorch.
-    y и x должны быть тензорами, при этом для x нужно requires_grad=True.
-    """
-    return torch.autograd.grad(
-        y, x,
-        grad_outputs=torch.ones_like(y),
-        create_graph=True
-    )[0]
-    
+# Производная функции h(t) по времени t
+# y - высота h(t)
+# x - время t
+# grad_outputs - градиенты высоты h(t) по времени t
+# create_graph - создать граф для обратного распространения ошибки
+def derivative(y, x): 
+    return torch.autograd.grad(y, x, grad_outputs=torch.ones_like(y), create_graph=True)[0]
+
 # ----------------------------------------------
-# 4. Определяем компоненты функции потерь (PINN)
+# 4. Компоненты функции потерь (PINN)
 # ----------------------------------------------
 # У нас есть:
-#    (1) Потеря по данным (подгонка под зашумлённые данные)
+#    (1) Потеря по данным (подгонка под зашумлённые измерения датчиков)
 #    (2) Потеря по ОДУ: dh/dt = v0 - g * t
-#    (3) Потеря по начальному условию: h(0) = h0
+#    (3) Потеря по начальному условию: h(0) = y0
 
+# Потеря по ОДУ
 def physics_loss(model, t):
-    """
-    Сравниваем d(h_pred)/dt с известным выражением (v0 - g t).
-    """
-    # Для работы autograd тензор t должен иметь requires_grad = True
-    t.requires_grad_(True)
-
+    t = t.clone().detach().requires_grad_(True)
     h_pred = model(t)
     dh_dt_pred = derivative(h_pred, t)
-
-    # Для каждого t истинное уравнение: dh/dt = v0 - g * t
     dh_dt_true = v0 - g * t
+    return torch.mean((dh_dt_pred - dh_dt_true) ** 2)
 
-    # Потеря по ОДУ: среднеквадратичная ошибка между предсказанным и истинным dh/dt
-    loss_ode = torch.mean((dh_dt_pred - dh_dt_true)**2)
-    return loss_ode
-
+# Потеря по начальному условию
 def initial_condition_loss(model):
-    """
-    Обеспечиваем выполнение условия h(0) = h0.
-    """
-    t0 = torch.zeros(1, 1, dtype=torch.float32, requires_grad=False) 
-    h0_pred = model(t0)
-    
-    loss_ic = (h0_pred - h0).pow(2).mean() # Потеря по начальному условию: среднеквадратичная ошибка между предсказанным и истинным h(0)
-    return loss_ic
+    t0 = torch.zeros(1, 1, dtype=torch.float32)
+    return (model(t0) - y0).pow(2).mean()
 
-def data_loss(model, t_data, h_data):
-    """
-    Среднеквадратичная ошибка (MSE) между предсказанными h(t_i)
-    и зашумлёнными измерениями h_data.
-    """
-    h_pred = model(t_data) # Предсказываем значения h(t) для всех t_data
-    
-    # Потеря по данным: среднеквадратичная ошибка между предсказанными и зашумлёнными измерениями
-    loss_data = torch.mean((h_pred - h_data)**2)
-    return loss_data
+# Потеря по данным
+def data_loss(model, t, y):
+    return torch.mean((model(t) - y) ** 2)
+
 
 # ---------------------------------------
 # 5. Настройка обучения
 # ---------------------------------------
-# Определяем оптимизатор. 
-# Adam - это алгоритм оптимизации, который используется для обновления весов нейросети
-# lr - learning rate, т.е. скорость обучения
-# model.parameters() - это все параметры нейросети, которые нужно оптимизировать
-optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.01) # Оптимизатор Adam с learning rate = 0.01
 
-# Гиперпараметры — веса компонентов функции потерь
-lambda_data = 2.0
-lambda_ode  = 2.0
-lambda_ic   = 2.0
+lambda_data = 1.0 # Вес для потери по данным
+lambda_ode = 1.0 # Вес для потери по ОДУ
+lambda_ic = 1.0 # Вес для потери по начальному условию
 
-# num_epochs - количество эпох обучения
-# print_every - частота вывода прогресса
-num_epochs = 4000
-print_every = 200
+num_epochs = 4000 # Количество эпох
+print_every = 200 # Печатать каждые 200 эпох
 
 # ---------------------------------------
 # 6. Цикл обучения
 # ---------------------------------------
-# Переводим модель в режим обучения
-model.train()
+model.train() # Устанавливаем модель в режим обучения
 
 # Цикл обучения
 for epoch in range(num_epochs):
-    # Обнуляем градиенты
     optimizer.zero_grad()
 
-    # Вычисляем потери
-    l_data = data_loss(model, t_data_tensor, h_data_tensor)
-    l_ode  = physics_loss(model, t_data_tensor)
-    l_ic   = initial_condition_loss(model)
+    l_data = data_loss(model, t_data_tensor, y_data_tensor)
+    l_ode = physics_loss(model, t_data_tensor)
+    l_ic = initial_condition_loss(model)
 
-    # Суммарная потеря
     loss = lambda_data * l_data + lambda_ode * l_ode + lambda_ic * l_ic
-
-    # Обратное распространение
     loss.backward()
     optimizer.step()
 
-    # Вывод прогресса
-    if (epoch+1) % print_every == 0:
-        print(f"Эпоха {epoch+1}/{num_epochs}, "
-              f"Общая потеря = {loss.item():.6f}, "
-              f"Потеря по данным = {l_data.item():.6f}, "
-              f"Потеря по ОДУ = {l_ode.item():.6f}, "
-              f"Потеря по начальному условию = {l_ic.item():.6f}")
-        
+    if (epoch + 1) % print_every == 0:
+        print(
+            f"Эпоха {epoch + 1}/{num_epochs}, "
+            f"Общая потеря = {loss.item():.6f}, "
+            f"Потеря по данным = {l_data.item():.6f}, "
+            f"Потеря по ОДУ = {l_ode.item():.6f}, "
+            f"Потеря по начальному условию = {l_ic.item():.6f}"
+        )
+
 # ---------------------------------------
 # 7. Оценка обученной модели
 # ---------------------------------------
-# Переводим модель в режим оценки
 model.eval()
 
-# Генерируем точки для оценки
-t_plot = np.linspace(t_min, t_max, 100).reshape(-1, 1).astype(np.float32)
+t_plot = np.linspace(0.0, float(t[-1]), 100).reshape(-1, 1).astype(np.float32)
 t_plot_tensor = torch.tensor(t_plot, requires_grad=True)
 
-# Предсказываем значения h(t) для всех t_plot
 h_pred_plot = model(t_plot_tensor).detach().numpy()
 
-# Точное решение (для сравнения)
-h_true_plot = true_solution(t_plot)
+t_analytical = np.linspace(0.0, float(t[-1]), 100)
+h_true_plot = analytical_solution(t_analytical)
+valid = h_true_plot >= 0
 
-# Строим графики результатов
 plt.figure(figsize=(8, 5))
-plt.scatter(t_data, h_data_noisy, color='red', label='Зашумлённые данные')
-plt.plot(t_plot, h_true_plot, 'k--', label='Точное решение')
-plt.plot(t_plot, h_pred_plot, 'b', label='Предсказание PINN')
-plt.xlabel('t')
-plt.ylabel('h(t)')
+plt.scatter(t, y, color="red", label="Зашумленные данные")
+plt.plot(t_analytical[valid], h_true_plot[valid], "k--", label="Точное решение")
+plt.plot(t_plot, h_pred_plot, "b", label="Предсказание модели")
+plt.xlabel("t, с")
+plt.ylabel("y, м")
 plt.legend()
-plt.title('PINN для траектории мяча')
+plt.title("PINN для траектории броска мяча")
 plt.grid(True)
-plt.savefig(FIGS_DIR / 'pinn_ball_trajectory_result.png')
+plt.savefig(FIGS_DIR / f"pinn_ball_trajectory_result_lambda_{lambda_data}_{lambda_ode}_{lambda_ic}.png")
 plt.show()
-
-# При необходимости сохраняем модель в файл
-# torch.save(model.state_dict(), 'pinn_ball_trajectory_model.pth')

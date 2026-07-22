@@ -106,7 +106,7 @@ def derivative(y, x):
 #    (1) Потеря по данным (подвыборка CV-трека)
 #    (2) Потеря по ОДУ: θ'' + 2β θ' + ω₀² θ = 0
 #    (3) Потеря по начальному условию: θ(0) = θ₀
-#    (4) Потеря по начальной скорости: θ̇(0) = θ̇₀
+#    (4) Потеря по начальной скорости: dθ/dt(0) = θ̇₀
 
 def physics_loss(model, t_phys):
     """
@@ -130,7 +130,7 @@ def initial_condition_loss(model):
 
 def initial_velocity_loss(model):
     """
-    Обеспечиваем выполнение условия θ̇(0) = θ̇₀.
+    Обеспечиваем выполнение условия dθ/dt(0).
     """
     t0 = torch.zeros(1, 1, dtype=torch.float32, requires_grad=True)
     theta_pred_0 = model(t0)
@@ -203,7 +203,7 @@ for epoch in range(num_epochs):
             f"Потеря по данным = {l_data.item():.6f}, "
             f"Потеря по ОДУ = {l_ode.item():.6f}, "
             f"Потеря по θ(0) = {l_ic.item():.6f}, "
-            f"Потеря по θ̇(0) = {l_ic_vel.item():.6f}"
+            f"Потеря по dθ/dt(0) = {l_ic_vel.item():.6f}"
         )
 
 # ---------------------------------------
@@ -243,28 +243,28 @@ plt.plot(
     theta_csv[window_mask],
     color='0.35',
     linewidth=0.8,
-    label='Численное CV решение',
+    label='Численное решение (CV)',
 )
 plt.scatter(
     t_data,
     theta_data,
     color='red',
     s=18,
-    label='Данные (подвыборка)',
+    label='Данные (выборка)',
 )
 plt.plot(
     t_analytical_plot,
     theta_analytical_plot,
     'k--',
     linewidth=1.5,
-    label='Аналитическое',
+    label='Аналитическое решение',
 )
 plt.plot(
     t_plot,
     theta_pred_plot,
     'b',
     linewidth=1.2,
-    label='Предсказание PINN',
+    label='Предсказание модели',
 )
 plt.xlim(t_min, t_max)
 plt.xlabel('t')
