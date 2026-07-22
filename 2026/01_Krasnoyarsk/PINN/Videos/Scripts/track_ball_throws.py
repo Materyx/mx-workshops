@@ -59,12 +59,27 @@ def tab10_color_bgr(index: int) -> tuple[int, int, int]:
     )
 
 
+def output_set_dir(label: str) -> Path:
+    output_dir = OUTPUT_DIR / label
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return output_dir
+
+
 def output_paths(label: str) -> dict[str, Path]:
+    output_dir = output_set_dir(label)
     return {
-        "video": OUTPUT_DIR / f"{OUTPUT_STEM}-{label}.mp4",
-        "image": OUTPUT_DIR / f"{OUTPUT_STEM}-{label}.png",
-        "data": OUTPUT_DIR / f"{OUTPUT_STEM}-{label}.csv",
+        "video": output_dir / f"{OUTPUT_STEM}.mp4",
+        "image": output_dir / f"{OUTPUT_STEM}.png",
     }
+
+
+def trajectory_csv_path(label: str, track_index: int) -> Path:
+    track_number = track_index + 1
+    return output_set_dir(label) / f"track{track_number:02d}.csv"
+
+
+def to_export_coords(x_coord: int, y_coord: int, frame_height: int) -> tuple[int, int]:
+    return x_coord, frame_height - y_coord
 
 
 def apply_y_noise(trajectories: list[list[TrackPoint]]) -> list[list[TrackPoint]]:
@@ -294,34 +309,30 @@ def draw_trajectories(
         draw_trajectory_tab10(frame, points, index)
 
 
-def write_trajectories_csv(
+def write_trajectory_csv(
     output_path: Path,
-    trajectories: list[list[TrackPoint]],
+    points: list[TrackPoint],
+    frame_height: int,
 ) -> None:
-    if not trajectories:
-        output_path.write_text("pid,t,x,y\n", encoding="utf-8")
-        return
-
-    max_len = max(len(track) for track in trajectories)
-    header: list[str] = []
-    for _ in trajectories:
-        header.extend(["pid", "t", "x", "y"])
-
-    rows: list[list[str | int | float]] = []
-    for point_index in range(max_len):
-        row: list[str | int | float] = []
-        for track in trajectories:
-            if point_index < len(track):
-                timestamp, x_coord, y_coord = track[point_index]
-                row.extend([point_index, f"{timestamp:.4f}", x_coord, y_coord])
-            else:
-                row.extend(["", "", "", ""])
-        rows.append(row)
-
     with output_path.open("w", newline="", encoding="utf-8") as csv_file:
         writer = csv.writer(csv_file)
-        writer.writerow(header)
-        writer.writerows(rows)
+        writer.writerow(["t", "x", "y"])
+        for timestamp, x_coord, y_coord in points:
+            export_x, export_y = to_export_coords(x_coord, y_coord, frame_height)
+            writer.writerow([f"{timestamp:.4f}", export_x, export_y])
+
+
+def write_trajectories_csv(
+    label: str,
+    trajectories: list[list[TrackPoint]],
+    frame_height: int,
+) -> list[Path]:
+    csv_paths: list[Path] = []
+    for track_index, points in enumerate(trajectories):
+        output_path = trajectory_csv_path(label, track_index)
+        write_trajectory_csv(output_path, points, frame_height)
+        csv_paths.append(output_path)
+    return csv_paths
 
 
 def render_trajectory_video(
@@ -380,12 +391,12 @@ def export_measurement_set(
     width: int,
     height: int,
     fps: float,
-) -> dict[str, Path]:
+) -> tuple[dict[str, Path], list[Path]]:
     paths = output_paths(label)
     render_trajectory_video(trajectories, paths["video"], width, height, fps)
     save_trajectory_image(trajectories, paths["image"], width, height)
-    write_trajectories_csv(paths["data"], trajectories)
-    return paths
+    csv_paths = write_trajectories_csv(label, trajectories, height)
+    return paths, csv_paths
 
 
 def process_ball_throws() -> None:
@@ -485,26 +496,35 @@ def process_ball_throws() -> None:
 
     good_trajectories = finished.copy()
     save_trajectory_image(good_trajectories, good_paths["image"], width, height)
-    write_trajectories_csv(good_paths["data"], good_trajectories)
+    good_csv_paths = write_trajectories_csv("good", good_trajectories, height)
 
     bad_trajectories = apply_y_noise(good_trajectories)
-    bad_paths = export_measurement_set("bad", bad_trajectories, width, height, fps)
+    bad_paths, bad_csv_paths = export_measurement_set(
+        "bad", bad_trajectories, width, height, fps
+    )
 
     point_count = sum(len(points) for points in good_trajectories)
     print(f"Готово: {len(good_trajectories)} траекторий, {point_count} точек")
     for index, points in enumerate(good_trajectories, start=1):
-        xs = [point[1] for point in points]
-        ys = [point[2] for point in points]
+        export_coords = [
+            to_export_coords(point[1], point[2], height) for point in points
+        ]
+        xs = [coord[0] for coord in export_coords]
+        ys = [coord[1] for coord in export_coords]
+        csv_path = good_csv_paths[index - 1]
         print(
             f"  {index}: {len(points)} точек, "
-            f"x=[{min(xs)}, {max(xs)}], y=[{min(ys)}, {max(ys)}]"
+            f"x=[{min(xs)}, {max(xs)}], y=[{min(ys)}, {max(ys)}], "
+            f"csv={csv_path.relative_to(OUTPUT_DIR)}"
         )
-    print(f"Good данные: {good_paths['data']}")
-    print(f"Good видео: {good_paths['video']}")
-    print(f"Good изображение: {good_paths['image']}")
-    print(f"Bad данные: {bad_paths['data']}")
-    print(f"Bad видео: {bad_paths['video']}")
-    print(f"Bad изображение: {bad_paths['image']}")
+    print(f"Good видео: {good_paths['video'].relative_to(OUTPUT_DIR)}")
+    print(f"Good изображение: {good_paths['image'].relative_to(OUTPUT_DIR)}")
+    print(f"Bad видео: {bad_paths['video'].relative_to(OUTPUT_DIR)}")
+    print(f"Bad изображение: {bad_paths['image'].relative_to(OUTPUT_DIR)}")
+    print(
+        f"Bad CSV: {len(bad_csv_paths)} файлов в "
+        f"{output_set_dir('bad').relative_to(OUTPUT_DIR)}"
+    )
 
 
 if __name__ == "__main__":
