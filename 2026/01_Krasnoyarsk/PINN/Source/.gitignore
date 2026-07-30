@@ -2,3 +2,5 @@ __pycache__/
 
 utils/get_ball_graph.py
 utils/get_heat_graph.py
+
+utils/maps
