@@ -15,7 +15,7 @@ VIDEOS_OUTPUT_DIR = Path(__file__).resolve().parent.parent / 'Videos' / 'Output'
 # ---------------------------------------
 # True  — вход (t, sin(ωt), cos(ωt))
 # False — вход только t
-is_fourier_features = False
+is_fourier_features = True
 train_seed = 42
 torch.manual_seed(train_seed)
 np.random.seed(train_seed)
