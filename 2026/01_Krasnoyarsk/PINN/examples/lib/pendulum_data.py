@@ -9,8 +9,6 @@ from scipy.signal import find_peaks
 
 ROOT = Path(__file__).resolve().parents[2]
 PINN_DIR = ROOT
-ASSETS = ROOT / "assets"
-TRACKS = ROOT / "internal" / "video" / "tracks"
 
 DEFAULT_OMEGA0_FIT_POINTS = 10
 
@@ -286,7 +284,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "csv",
         nargs="?",
-        default=TRACKS / "pendulums" / "pendulum_2_trajectory.csv",
+        default=PINN_DIR / "examples" / "data" / "pendulum" / "pendulum_2_trajectory.csv",
     )
     parser.add_argument("--t-max", type=float, default=40.0, help="Правая граница окна подгонки, с")
     parser.add_argument("--t-start", type=float, default=0.0, help="Левая граница окна подгонки, с")

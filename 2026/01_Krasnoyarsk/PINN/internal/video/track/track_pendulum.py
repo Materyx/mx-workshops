@@ -4,9 +4,10 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-FILES_DIR = BASE_DIR / "Files" / "pendulums"
-OUTPUT_DIR = BASE_DIR / "Output" / "pendulums"
+ROOT = Path(__file__).resolve().parents[3]
+VIDEO_DIR = ROOT / "internal" / "video"
+FILES_DIR = VIDEO_DIR / "raw" / "pendulums"
+OUTPUT_DIR = VIDEO_DIR / "tracks" / "pendulums"
 
 VIDEOS = [
     (FILES_DIR / "pendulum_1.mp4", "pendulum_1_trajectory"),

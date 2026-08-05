@@ -1,13 +1,18 @@
-import torch
-import torch.nn as nn
-import numpy as np
-import matplotlib.pyplot as plt
+import sys
 from pathlib import Path
 
-from utils.load_ball_track import load_ball_track
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
+import torch.nn as nn
 
-FIGS_DIR = Path(__file__).resolve().parent.parent / "Figs" / "ball_trajectory"
-FIGS_DIR.mkdir(parents=True, exist_ok=True)
+ROOT = Path(__file__).resolve().parents[1]
+DATA = ROOT / "examples" / "data"
+OUTPUT = ROOT / "examples" / "output"
+OUTPUT.mkdir(parents=True, exist_ok=True)
+
+sys.path.insert(0, str(ROOT / "examples"))
+from lib.load_ball_track import load_ball_track
 
 # ---------------------------------------
 # 1. Аналитическое решение
@@ -24,7 +29,7 @@ def analytical_solution(t):
 # ---------------------------------------
 # 2. Зашумлённые данные
 # ---------------------------------------
-t, y = load_ball_track("Videos/Output/ball_throws/bad/track06.csv")
+t, y = load_ball_track(DATA / "ball" / "track06.csv")
 
 t_data_tensor = torch.tensor(t, dtype=torch.float32).view(-1, 1)
 y_data_tensor = torch.tensor(y, dtype=torch.float32).view(-1, 1)
@@ -53,7 +58,7 @@ model = PINN(n_hidden=20) # Создаем модель PINN с 20 скрыты�
 # x - время t
 # grad_outputs - градиенты высоты h(t) по времени t
 # create_graph - создать граф для обратного распространения ошибки
-def derivative(y, x): 
+def derivative(y, x):
     return torch.autograd.grad(y, x, grad_outputs=torch.ones_like(y), create_graph=True)[0]
 
 # ----------------------------------------------
@@ -143,5 +148,5 @@ plt.ylabel("y, м")
 plt.legend()
 plt.title("PINN для траектории броска мяча")
 plt.grid(True)
-plt.savefig(FIGS_DIR / f"pinn_ball_trajectory_result_lambda_{lambda_data}_{lambda_ode}_{lambda_ic}.png")
+plt.savefig(OUTPUT / f"pinn_ball_trajectory_result_lambda_{lambda_data}_{lambda_ode}_{lambda_ic}.png")
 plt.show()

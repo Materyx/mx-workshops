@@ -1,14 +1,18 @@
-import torch
-import torch.nn as nn
-import numpy as np
-import matplotlib.pyplot as plt
+import sys
 from pathlib import Path
 
-from utils.get_pendulum_params import get_pendulum_params, sample_pendulum_data
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
+import torch.nn as nn
 
-FIGS_DIR = Path(__file__).resolve().parent.parent / 'Figs'
-FIGS_DIR.mkdir(parents=True, exist_ok=True)
-VIDEOS_OUTPUT_DIR = Path(__file__).resolve().parent.parent / 'Videos' / 'Output' / 'pendulums'
+ROOT = Path(__file__).resolve().parents[1]
+DATA = ROOT / "examples" / "data"
+OUTPUT = ROOT / "examples" / "output"
+OUTPUT.mkdir(parents=True, exist_ok=True)
+
+sys.path.insert(0, str(ROOT / "examples"))
+from lib.pendulum_data import get_pendulum_params, sample_pendulum_data
 
 # ---------------------------------------
 # 0. Fourier-признаки
@@ -25,7 +29,7 @@ np.random.seed(train_seed)
 # ---------------------------------------
 
 # Путь к траектории
-DATA_CSV = VIDEOS_OUTPUT_DIR / 'pendulum_2_trajectory.csv'
+DATA_CSV = DATA / "pendulum" / "pendulum_2_trajectory.csv"
 
 # Временное окно, с
 t_min, t_max = 0.0, 60.0
@@ -235,7 +239,7 @@ lambda_suffix = ",".join(
     for value in (lambda_data, lambda_ode, lambda_ic, lambda_ic_vel)
 )
 fourier_tag = 'fourier' if is_fourier_features else 'plain'
-result_fig_path = FIGS_DIR / f'pinn_pendulum_result_{fourier_tag}_lambda[{lambda_suffix}].png'
+result_fig_path = OUTPUT / f'pinn_pendulum_result_{fourier_tag}_lambda[{lambda_suffix}].png'
 
 plt.figure(figsize=(10, 5))
 plt.plot(

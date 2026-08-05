@@ -5,15 +5,16 @@ from pathlib import Path
 
 import numpy as np
 
-SOURCE_DIR = Path(__file__).resolve().parent.parent
-PINN_DIR = SOURCE_DIR.parent
+ROOT = Path(__file__).resolve().parents[2]
+PINN_DIR = ROOT
+ASSETS = ROOT / "assets"
+TRACKS = ROOT / "internal" / "video" / "tracks"
+RAW = ROOT / "internal" / "video" / "raw"
 
 G = 9.8
 EXCLUDE_TAIL = 3
-DEFAULT_DATA_CSV = (
-    PINN_DIR / "Videos" / "Output" / "ball_throws" / "good" / "track06.csv"
-)
-BALL_VIDEO = PINN_DIR / "Videos" / "Files" / "ball_throws" / "ball_throws.mp4"
+DEFAULT_DATA_CSV = TRACKS / "ball_throws" / "good" / "track06.csv"
+BALL_VIDEO = RAW / "ball_throws" / "ball_throws.mp4"
 FRAME_WIDTH_PX = 1920
 WIDTH_SEARCH_MIN_M = 0.5
 WIDTH_SEARCH_MAX_M = 1.5

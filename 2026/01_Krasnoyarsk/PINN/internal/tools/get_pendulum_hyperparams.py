@@ -1,17 +1,23 @@
 from __future__ import annotations
 
+import random
+import sys
 from dataclasses import dataclass
 from pathlib import Path
-import random
+
+ROOT = Path(__file__).resolve().parents[2]
+INTERNAL = ROOT / "internal"
+if str(INTERNAL) not in sys.path:
+    sys.path.insert(0, str(INTERNAL))
 
 import numpy as np
 import torch
 import torch.nn as nn
 
-from utils.get_pendulum_params import PendulumParams, get_pendulum_params, sample_pendulum_data
+from tools.get_pendulum_params import PendulumParams, get_pendulum_params, sample_pendulum_data
 
-SOURCE_DIR = Path(__file__).resolve().parent.parent
-PINN_DIR = SOURCE_DIR.parent
+PINN_DIR = ROOT
+TRACKS = ROOT / "internal" / "video" / "tracks"
 
 DEFAULT_SEARCH_METHOD = "bayesian"
 DEFAULT_BO_TRIALS = 30
@@ -582,7 +588,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "csv",
         nargs="?",
-        default=PINN_DIR / "Videos/Output/pendulums/pendulum_2_trajectory.csv",
+        default=TRACKS / "pendulums" / "pendulum_2_trajectory.csv",
     )
     parser.add_argument("--t-min", type=float, default=0.0)
     parser.add_argument("--t-max", type=float, default=60.0)

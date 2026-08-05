@@ -1,15 +1,17 @@
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
-import matplotlib.pyplot as plt
-from pathlib import Path
 from matplotlib.gridspec import GridSpec
-
-FIGS_DIR = Path(__file__).resolve().parent.parent / 'Figs'
-FIGS_DIR.mkdir(parents=True, exist_ok=True)
 from scipy import sparse
-from scipy.sparse.linalg import spsolve
 from scipy.interpolate import RegularGridInterpolator
+from scipy.sparse.linalg import spsolve
+
+ROOT = Path(__file__).resolve().parents[1]
+OUTPUT = ROOT / "examples" / "output"
+OUTPUT.mkdir(parents=True, exist_ok=True)
 
 # ---------------------------------------
 # 1. Генерация синтетических данных
@@ -571,7 +573,7 @@ fig.suptitle(
     'PINN для 2D теплопроводности в алюминиевой пластине',
     fontsize=14, y=0.98
 )
-plt.savefig(FIGS_DIR / 'pinn_heat_transfer_2d_result.png', dpi=150)
+plt.savefig(OUTPUT / 'pinn_heat_transfer_2d_result.png', dpi=150)
 plt.show()
 
 # При необходимости сохраняем модель в файл

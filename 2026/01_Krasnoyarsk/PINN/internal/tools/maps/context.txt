@@ -1,0 +1,664 @@
+МАТЕМАТИЧЕСКИЕ МОДЕЛИ
+ФИЗИЧЕСКИХ И ХИМИЧЕСКИХ ПРОЦЕССОВ
+│
+├── 1. НЕПРЕРЫВНЫЕ МОДЕЛИ
+│   │
+│   ├── 1.1. Алгебраические уравнения — AE
+│   │   │
+│   │   ├── Линейные
+│   │   │   └── A x = b
+│   │   │
+│   │   ├── Нелинейные
+│   │   │   └── F(x) = 0
+│   │   │
+│   │   ├── Системы алгебраических уравнений
+│   │   │
+│   │   ├── Уравнения состояния
+│   │   │   ├── Ideal Gas
+│   │   │   ├── Van der Waals
+│   │   │   ├── Peng–Robinson
+│   │   │   └── другие EOS
+│   │   │
+│   │   ├── Уравнения равновесия
+│   │   │   ├── Chemical equilibrium
+│   │   │   ├── Phase equilibrium
+│   │   │   ├── Adsorption equilibrium
+│   │   │   └── Thermodynamic equilibrium
+│   │   │
+│   │   ├── Constraint equations
+│   │   │   ├── g(x) = 0
+│   │   │   └── h(x) ≤ 0
+│   │   │
+│   │   └── Complementarity problems
+│   │       ├── g ≥ 0
+│   │       ├── λ ≥ 0
+│   │       └── gλ = 0
+│   │
+│   │
+│   ├── 1.2. Дифференциальные уравнения
+│   │   │
+│   │   ├── 1.2.1. ODE
+│   │   │   │   Ordinary Differential Equations
+│   │   │   │
+│   │   │   ├── 1-го порядка
+│   │   │   │   └── dy/dt = f(y,t)
+│   │   │   │
+│   │   │   ├── Высших порядков
+│   │   │   │   └── dⁿy/dtⁿ = f(...)
+│   │   │   │
+│   │   │   ├── Системы ODE
+│   │   │   │   └── dx/dt = F(x,t)
+│   │   │   │
+│   │   │   ├── Линейные
+│   │   │   ├── Нелинейные
+│   │   │   ├── Автономные
+│   │   │   ├── Неавтономные
+│   │   │   │
+│   │   │   └── Процессы:
+│   │   │       ├── Chemical kinetics
+│   │   │       ├── Reaction networks
+│   │   │       ├── Lumped thermal models
+│   │   │       ├── Point mechanics
+│   │   │       ├── Oscillators
+│   │   │       ├── RLC circuits
+│   │   │       ├── Population dynamics
+│   │   │       └── Reactor dynamics
+│   │   │
+│   │   │
+│   │   ├── 1.2.2. PDE
+│   │   │   │   Partial Differential Equations
+│   │   │   │
+│   │   │   ├── По математическому типу
+│   │   │   │
+│   │   │   ├── Эллиптические
+│   │   │   │   ├── Laplace
+│   │   │   │   │   └── Δu = 0
+│   │   │   │   ├── Poisson
+│   │   │   │   │   └── -Δu = f
+│   │   │   │   └── Процессы
+│   │   │   │       ├── Electrostatics
+│   │   │   │       ├── Stationary heat transfer
+│   │   │   │       ├── Stationary diffusion
+│   │   │   │       ├── Potential flow
+│   │   │   │       └── Elastic equilibrium
+│   │   │   │
+│   │   │   ├── Параболические
+│   │   │   │   ├── Heat equation
+│   │   │   │   ├── Diffusion equation
+│   │   │   │   ├── Reaction–diffusion
+│   │   │   │   ├── Advection–diffusion
+│   │   │   │   └── Процессы
+│   │   │   │       ├── Heat conduction
+│   │   │   │       ├── Mass diffusion
+│   │   │   │       ├── Species transport
+│   │   │   │       ├── Electrochemical transport
+│   │   │   │       └── Porous transport
+│   │   │   │
+│   │   │   ├── Гиперболические
+│   │   │   │   ├── Wave equation
+│   │   │   │   ├── Conservation laws
+│   │   │   │   ├── Euler equations
+│   │   │   │   └── Процессы
+│   │   │   │       ├── Acoustic waves
+│   │   │   │       ├── Elastic waves
+│   │   │   │       ├── Seismic waves
+│   │   │   │       ├── Shock waves
+│   │   │   │       └── Compressible flow
+│   │   │   │
+│   │   │   ├── Смешанного типа
+│   │   │   │   ├── Tricomi-type equations
+│   │   │   │   └── Transonic flow
+│   │   │   │
+│   │   │   ├── PDE первого порядка
+│   │   │   │   ├── Transport equation
+│   │   │   │   ├── Advection equation
+│   │   │   │   ├── Hamilton–Jacobi
+│   │   │   │   └── Conservation laws
+│   │   │   │
+│   │   │   └── Системы PDE
+│   │   │       ├── Navier–Stokes
+│   │   │       ├── Euler
+│   │   │       ├── Maxwell
+│   │   │       ├── Elasticity
+│   │   │       ├── MHD
+│   │   │       └── Multiphysics systems
+│   │   │
+│   │   │
+│   │   ├── 1.2.3. DAE
+│   │   │   │   Differential-Algebraic Equations
+│   │   │   │
+│   │   │   ├── ẋ = f(x,z,t)
+│   │   │   ├── 0 = g(x,z,t)
+│   │   │   │
+│   │   │   ├── Index-1 DAE
+│   │   │   ├── Index-2 DAE
+│   │   │   ├── Index-3+ DAE
+│   │   │   │
+│   │   │   └── Процессы
+│   │   │       ├── Constrained mechanics
+│   │   │       ├── Multibody systems
+│   │   │       ├── Electrical networks
+│   │   │       ├── Power systems
+│   │   │       ├── Chemical process simulation
+│   │   │       └── Thermodynamic systems
+│   │   │
+│   │   │
+│   │   ├── 1.2.4. DDE
+│   │   │   │   Delay Differential Equations
+│   │   │   │
+│   │   │   ├── Constant delay
+│   │   │   │   └── ẋ(t)=f(x(t),x(t-τ))
+│   │   │   ├── Variable delay
+│   │   │   ├── Distributed delay
+│   │   │   │
+│   │   │   └── Процессы
+│   │   │       ├── Delayed reactions
+│   │   │       ├── Feedback systems
+│   │   │       ├── Biological regulation
+│   │   │       ├── Population dynamics
+│   │   │       └── Transport delays
+│   │   │
+│   │   │
+│   │   ├── 1.2.5. Functional Differential Equations
+│   │   │   └── состояние зависит от функции истории
+│   │   │
+│   │   │
+│   │   ├── 1.2.6. Fractional Differential Equations
+│   │   │   │
+│   │   │   ├── Fractional ODE
+│   │   │   ├── Fractional PDE
+│   │   │   ├── Caputo derivatives
+│   │   │   ├── Riemann–Liouville derivatives
+│   │   │   │
+│   │   │   └── Процессы
+│   │   │       ├── Anomalous diffusion
+│   │   │       ├── Viscoelasticity
+│   │   │       ├── Porous transport
+│   │   │       ├── Polymer dynamics
+│   │   │       └── Systems with memory
+│   │   │
+│   │   │
+│   │   └── 1.2.7. Differential Inclusions
+│   │       │
+│   │       ├── ẋ ∈ F(x)
+│   │       │
+│   │       └── Процессы
+│   │           ├── Dry friction
+│   │           ├── Contact
+│   │           ├── Plasticity
+│   │           ├── Hysteresis
+│   │           └── Nonsmooth mechanics
+│   │
+│   │
+│   ├── 1.3. Интегральные уравнения
+│   │   │
+│   │   ├── Fredholm
+│   │   │   ├── I рода
+│   │   │   └── II рода
+│   │   │
+│   │   ├── Volterra
+│   │   │   ├── I рода
+│   │   │   └── II рода
+│   │   │
+│   │   ├── Singular integral equations
+│   │   ├── Boundary integral equations
+│   │   │
+│   │   └── Процессы
+│   │       ├── Potential theory
+│   │       ├── Electromagnetism
+│   │       ├── Wave scattering
+│   │       ├── Radiation
+│   │       ├── Fracture mechanics
+│   │       └── BEM formulations
+│   │
+│   │
+│   ├── 1.4. Интегро-дифференциальные уравнения — IDE
+│   │   │
+│   │   ├── ODE + integral operator
+│   │   ├── PDE + integral operator
+│   │   │
+│   │   └── Процессы
+│   │       ├── Nonlocal mechanics
+│   │       ├── Viscoelasticity
+│   │       ├── Population dynamics
+│   │       ├── Radiation transport
+│   │       ├── Kinetic theory
+│   │       └── Long-range interactions
+│   │
+│   │
+│   └── 1.5. Уравнения с памятью
+│       │
+│       ├── Hereditary equations
+│       ├── Memory kernels
+│       ├── Convolution models
+│       │
+│       └── Процессы
+│           ├── Creep
+│           ├── Relaxation
+│           ├── Viscoelasticity
+│           ├── Polymers
+│           └── Biological tissues
+│
+│
+├── 2. ДИСКРЕТНЫЕ МОДЕЛИ
+│   │
+│   ├── 2.1. Difference Equations
+│   │   ├── xₙ₊₁ = F(xₙ)
+│   │   ├── Linear
+│   │   ├── Nonlinear
+│   │   └── Discrete dynamical systems
+│   │
+│   ├── 2.2. Recurrence Relations
+│   │   └── xₙ₊₁ = F(xₙ,xₙ₋₁,...)
+│   │
+│   ├── 2.3. Lattice Models
+│   │   ├── Ising
+│   │   ├── Potts
+│   │   ├── Lattice gas
+│   │   ├── Lattice reaction models
+│   │   └── Lattice Boltzmann
+│   │
+│   ├── 2.4. Cellular Automata
+│   │   │
+│   │   └── Процессы
+│   │       ├── Grain growth
+│   │       ├── Recrystallization
+│   │       ├── Solidification
+│   │       ├── Reaction fronts
+│   │       └── Phase evolution
+│   │
+│   └── 2.5. Discrete Network Models
+│       ├── Electrical networks
+│       ├── Pore networks
+│       ├── Thermal networks
+│       └── Reaction networks
+│
+│
+├── 3. СТОХАСТИЧЕСКИЕ МОДЕЛИ
+│   │
+│   ├── 3.1. SDE
+│   │   │   Stochastic Differential Equations
+│   │   │
+│   │   ├── Itô SDE
+│   │   ├── Stratonovich SDE
+│   │   ├── Langevin equations
+│   │   │
+│   │   └── Процессы
+│   │       ├── Brownian motion
+│   │       ├── Thermal fluctuations
+│   │       ├── Molecular motion
+│   │       ├── Stochastic kinetics
+│   │       └── Nucleation
+│   │
+│   ├── 3.2. SPDE
+│   │   │   Stochastic PDE
+│   │   │
+│   │   ├── Stochastic heat equation
+│   │   ├── Stochastic reaction–diffusion
+│   │   ├── Stochastic phase-field
+│   │   │
+│   │   └── Процессы
+│   │       ├── Fluctuating hydrodynamics
+│   │       ├── Turbulence models
+│   │       ├── Surface growth
+│   │       └── Phase transformations
+│   │
+│   ├── 3.3. Master Equations
+│   │   │
+│   │   ├── Continuous-time Master Equation
+│   │   ├── Chemical Master Equation — CME
+│   │   ├── Quantum Master Equation
+│   │   │
+│   │   └── Markov jump processes
+│   │
+│   ├── 3.4. Fokker–Planck Equations
+│   │   ├── Probability density evolution
+│   │   └── Связь с SDE/Langevin
+│   │
+│   ├── 3.5. Markov Models
+│   │   ├── Markov chains
+│   │   ├── Continuous-time Markov chains
+│   │   └── Markov jump processes
+│   │
+│   └── 3.6. Monte Carlo Models
+│       ├── Metropolis Monte Carlo
+│       ├── Kinetic Monte Carlo — kMC
+│       ├── Gillespie SSA
+│       ├── Grand Canonical Monte Carlo — GCMC
+│       └── Path / quantum Monte Carlo
+│
+│
+├── 4. КИНЕТИЧЕСКИЕ МОДЕЛИ
+│   │
+│   │   Основная переменная:
+│   │   f(x,v,t) или f(x,p,t)
+│   │
+│   ├── Boltzmann Equation
+│   │
+│   ├── Vlasov Equation
+│   │   ├── Vlasov–Poisson
+│   │   └── Vlasov–Maxwell
+│   │
+│   ├── BGK Equation
+│   │
+│   ├── Landau Equation
+│   │
+│   ├── Fokker–Planck kinetic models
+│   │
+│   ├── Radiative Transfer Equation
+│   │
+│   ├── Phonon Boltzmann Transport Equation
+│   │
+│   ├── Electron Boltzmann Transport
+│   │
+│   └── Процессы
+│       ├── Rarefied gases
+│       ├── Plasma
+│       ├── Semiconductor transport
+│       ├── Phonon heat transport
+│       ├── Radiation
+│       └── Particle transport
+│
+│
+├── 5. ВАРИАЦИОННЫЕ МОДЕЛИ
+│   │
+│   ├── 5.1. Variational Principles
+│   │   ├── δJ[u] = 0
+│   │   ├── Least action
+│   │   ├── Minimum potential energy
+│   │   └── Minimum free energy
+│   │
+│   ├── 5.2. Euler–Lagrange Equations
+│   │
+│   ├── 5.3. Weak Formulations
+│   │   ├── Galerkin formulation
+│   │   └── FEM basis
+│   │
+│   ├── 5.4. Variational Inequalities
+│   │   ├── Contact
+│   │   ├── Plasticity
+│   │   └── Obstacle problems
+│   │
+│   └── 5.5. Energy Minimization
+│       ├── Molecular geometry
+│       ├── Elastic equilibrium
+│       ├── Phase-field
+│       ├── DFT
+│       └── Equilibrium structures
+│
+│
+├── 6. СПЕКТРАЛЬНЫЕ ЗАДАЧИ
+│   │
+│   ├── 6.1. Eigenvalue Problems
+│   │   ├── Aφ = λφ
+│   │   └── Aφ = λBφ
+│   │
+│   ├── 6.2. Generalized Eigenvalue Problems
+│   │
+│   ├── 6.3. Modal Analysis
+│   │   └── Kφ = ω²Mφ
+│   │
+│   ├── 6.4. Stability Eigenproblems
+│   │
+│   ├── 6.5. Quantum Eigenproblems
+│   │   └── Hψ = Eψ
+│   │
+│   └── Применения
+│       ├── Natural frequencies
+│       ├── Buckling
+│       ├── Waveguide modes
+│       ├── Quantum energy levels
+│       ├── Electronic structure
+│       └── Stability
+│
+│
+├── 7. ОПТИМИЗАЦИОННЫЕ МОДЕЛИ
+│   │
+│   ├── 7.1. Unconstrained Optimization
+│   │   └── min J(x)
+│   │
+│   ├── 7.2. Constrained Optimization
+│   │   ├── min J(x)
+│   │   ├── g(x)=0
+│   │   └── h(x)≤0
+│   │
+│   ├── 7.3. Optimal Control
+│   │   ├── ODE-constrained
+│   │   └── PDE-constrained
+│   │
+│   ├── 7.4. Shape Optimization
+│   │
+│   ├── 7.5. Topology Optimization
+│   │
+│   ├── 7.6. Parameter Optimization
+│   │
+│   └── 7.7. Inverse Design
+│
+│
+├── 8. ОБРАТНЫЕ И ИДЕНТИФИКАЦИОННЫЕ ЗАДАЧИ
+│   │
+│   ├── Inverse Problems
+│   │
+│   ├── Parameter Identification
+│   │
+│   ├── System Identification
+│   │
+│   ├── Source Identification
+│   │
+│   ├── Boundary-condition identification
+│   │
+│   ├── Initial-condition reconstruction
+│   │
+│   ├── State Estimation
+│   │
+│   └── Data Assimilation
+│
+│
+├── 9. СЕТЕВЫЕ / ГРАФОВЫЕ МОДЕЛИ
+│   │
+│   ├── Graph Dynamical Systems
+│   │
+│   ├── Graph Laplacian Models
+│   │   └── dx/dt = -Lx
+│   │
+│   ├── Reaction Networks
+│   ├── Electrical Networks
+│   ├── Thermal Networks
+│   ├── Hydraulic Networks
+│   ├── Pore Network Models
+│   └── Molecular Graph Models
+│
+│
+├── 10. АГЕНТНЫЕ / ЧАСТИЧНЫЕ МОДЕЛИ
+│   │
+│   ├── Agent-Based Models — ABM
+│   │
+│   ├── Particle-Based Models
+│   │
+│   ├── Molecular Dynamics — MD
+│   │   ├── Newtonian MD
+│   │   ├── Langevin MD
+│   │   └── Reactive MD
+│   │
+│   ├── Discrete Element Method — DEM
+│   │
+│   ├── Smoothed Particle Hydrodynamics — SPH
+│   │
+│   └── Brownian Dynamics
+│
+│
+├── 11. МУЛЬТИФИЗИЧЕСКИЕ МОДЕЛИ
+│   │
+│   ├── Thermo-mechanics
+│   ├── Fluid–Structure Interaction — FSI
+│   ├── Electro-thermal
+│   ├── Electro-mechanical
+│   ├── Magneto-hydrodynamics — MHD
+│   ├── Reaction–Diffusion
+│   ├── Reaction–Advection–Diffusion
+│   ├── Thermo-Chemo-Mechanical
+│   ├── Electrochemical transport
+│   ├── Poromechanics
+│   └── Reactive flow
+│
+│
+├── 12. МУЛЬТИМАСШТАБНЫЕ МОДЕЛИ
+│   │
+│   ├── Electronic scale
+│   │   └── Schrödinger / DFT
+│   │
+│   ├── Atomistic scale
+│   │   └── Molecular Dynamics
+│   │
+│   ├── Mesoscale
+│   │   ├── KMC
+│   │   ├── Phase-field
+│   │   ├── Lattice models
+│   │   └── Coarse-grained MD
+│   │
+│   ├── Continuum scale
+│   │   ├── PDE
+│   │   ├── FEM
+│   │   ├── CFD
+│   │   └── Continuum mechanics
+│   │
+│   └── Coupled multiscale
+│       ├── QM/MM
+│       ├── MD ↔ continuum
+│       └── Micro ↔ macro homogenization
+│
+│
+└── 13. ГИБРИДНЫЕ МОДЕЛИ
+    │
+    ├── ODE + Algebraic → DAE
+    ├── PDE + Algebraic constraints
+    ├── ODE + Stochastic → SDE
+    ├── PDE + Stochastic → SPDE
+    ├── Differential + Integral → IDE
+    ├── PDE + particle model
+    ├── Continuum + discrete
+    ├── Physics + empirical model
+    ├── Physics + ML
+    └── Digital Twin / Hybrid Physics Model
+
+стационарная / нестационарная → начальная / краевая / начально-краевая → прямая / обратная → идентификация параметров → собственные значения → управление → оптимизация → мультифизика.
+
+ТИП ПОСТАНОВКИ ЗАДАЧИ
+│
+├── 1. По времени
+│   ├── Стационарная / steady-state
+│   ├── Квазистационарная
+│   ├── Нестационарная / transient
+│   ├── Периодическая
+│   └── Установившийся периодический режим
+│
+├── 2. По известным условиям
+│   ├── Initial Value Problem — IVP
+│   │   └── задача Коши
+│   │
+│   ├── Boundary Value Problem — BVP
+│   │   ├── Dirichlet
+│   │   ├── Neumann
+│   │   ├── Robin
+│   │   ├── Mixed
+│   │   └── Periodic BC
+│   │
+│   └── Initial-Boundary Value Problem — IBVP
+│
+├── 3. По направлению вывода
+│   ├── Forward Problem
+│   │   └── параметры → состояние
+│   │
+│   └── Inverse Problem
+│       └── наблюдения → параметры/источник/состояние
+│
+├── 4. По искомой величине
+│   ├── State problem
+│   ├── Parameter identification
+│   ├── Source identification
+│   ├── Boundary reconstruction
+│   ├── Initial-state reconstruction
+│   ├── Geometry identification
+│   └── Constitutive-law identification
+│
+├── 5. По математической цели
+│   ├── Simulation
+│   ├── Prediction
+│   ├── Eigenvalue problem
+│   ├── Stability analysis
+│   ├── Bifurcation analysis
+│   ├── Optimization
+│   ├── Optimal control
+│   └── Inverse design
+│
+└── 6. По определённости
+    ├── Deterministic
+    ├── Stochastic
+    ├── Uncertain parameters
+    ├── Robust
+    └── Probabilistic
+
+ПРЕДСТАВЛЕНИЕ ФИЗИЧЕСКОЙ СИСТЕМЫ
+│
+├── Lumped / сосредоточенная
+│   └── ODE / DAE
+│
+├── Continuum / сплошная среда
+│   └── PDE
+│
+├── Distribution / распределение частиц
+│   └── Kinetic equations
+│
+├── Particle / частицы
+│   └── MD / DEM / SPH
+│
+├── Discrete lattice
+│   └── Cellular Automata / Ising / KMC
+│
+├── Network
+│   └── Graph / network equations
+│
+├── Probabilistic state
+│   └── Master / Fokker–Planck
+│
+└── Quantum state
+    └── Schrödinger / density matrix / DFT
+
+                    ФИЗИКО-ХИМИЧЕСКАЯ МОДЕЛЬ
+                              │
+       ┌──────────────────────┼──────────────────────┐
+       │                      │                      │
+   Пространство            Случайность          Взаимодействие
+       │                      │                      │
+  Lumped / Field       Deterministic         Local
+  Discrete /           Stochastic            Non-local
+  Continuous                                 Memory
+       │
+       ├───────────────────────────────────────────────
+       │
+     Время
+       │
+  Continuous
+  Discrete
+  Delayed
+  Fractional
+       │
+       ├───────────────────────────────────────────────
+       │
+     Масштаб
+       │
+  Quantum
+  Atomistic
+  Mesoscopic
+  Continuum
+  Macroscopic
+       │
+       ├───────────────────────────────────────────────
+       │
+    Постановка
+       │
+  Forward
+  Inverse
+  Eigenvalue
+  Optimization
+  Control
